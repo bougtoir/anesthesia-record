@@ -1,0 +1,140 @@
+# anesthesia-record 症例定義ファイルのサンプル
+# このファイルをコピーして使用してください。
+
+# 患者情報
+patient:
+  id: "SAMPLE-001"
+  age: 45
+  sex: male          # male / female
+  weight_kg: 65
+  height_cm: 172
+  asa_ps: 2
+
+# 手術開始時刻
+start_time: "2026-06-30 09:00"
+
+# バイタルデータ (CSVファイルパス)
+# vitals_file: "vitals.csv"
+# vitals_source: auto   # auto / vscapture_csv / vitalrecorder_csv
+
+# 手術時間 (バイタルファイルがない場合の表示範囲)
+duration_min: 35
+
+# チャート設定
+title: "麻酔記録"
+show_floating_latest: true
+latest_panel_loc: "upper right"
+ce_horizon_min: 90
+
+# Ce推定対象薬剤 (drug_master.yaml のID)
+ce_drugs:
+  - propofol_1pct
+  - remifentanil_2mg
+  - fentanyl_0_1mg
+
+# 投薬イベント
+medications:
+  - drug_id: fentanyl_0_1mg
+    time: "2026-06-30 09:00"
+    delivery: bolus
+    dose: 100
+    dose_unit: ug
+    note: "導入"
+
+  - drug_id: propofol_1pct
+    time: "2026-06-30 09:00:30"
+    delivery: bolus
+    dose: 130
+    dose_unit: mg
+    note: "導入"
+
+  - drug_id: rocuronium_50mg
+    time: "2026-06-30 09:01"
+    delivery: bolus
+    dose: 50
+    dose_unit: mg
+
+  - drug_id: remifentanil_2mg
+    time: "2026-06-30 09:02"
+    delivery: infusion
+    rate: 0.2
+    rate_unit: ug/kg/min
+    end_time: "2026-06-30 09:30"
+
+  - drug_id: propofol_1pct
+    time: "2026-06-30 09:02"
+    delivery: infusion
+    rate: 6
+    rate_unit: mg/kg/h
+    end_time: "2026-06-30 09:30"
+
+  # 輸液 (残量入力方式)
+  - drug_id: acetated_ringer_500
+    time: "2026-06-30 09:00"
+    delivery: infusion
+    end_time: "2026-06-30 09:32"
+    remaining_ml_start: 500
+    remaining_ml_end: 393
+
+# 臨床イベント
+clinical_events:
+  - time: "2026-06-30 09:00"
+    name: anesthesia_start
+    icon: "▲"
+  - time: "2026-06-30 09:03"
+    name: intubation
+  - time: "2026-06-30 09:05"
+    name: position_lateral
+  - time: "2026-06-30 09:12"
+    name: incision
+  - time: "2026-06-30 09:25"
+    name: position_supine
+  - time: "2026-06-30 09:28"
+    name: surgery_end
+  - time: "2026-06-30 09:32"
+    name: anesthesia_end
+    icon: "▼"
+
+# 出血・尿量 (差分入力 → ボーリング表示)
+outputs:
+  - category: gauze    # gauze(g) / suction(cc) / urine(cc)
+    time: "2026-06-30 09:14"
+    amount: 30
+  - category: gauze
+    time: "2026-06-30 09:22"
+    amount: 50
+  - category: suction
+    time: "2026-06-30 09:16"
+    amount: 20
+  - category: suction
+    time: "2026-06-30 09:26"
+    amount: 35
+  - category: urine
+    time: "2026-06-30 09:20"
+    amount: 50
+  - category: urine
+    time: "2026-06-30 09:30"
+    amount: 80
+
+# 麻酔料算定
+anesthesia_events:
+  - type: general_anesthesia
+    start: "2026-06-30 09:00"
+    end: "2026-06-30 09:32"
+
+# 特殊体位
+position_events:
+  - position: lateral
+    start: "2026-06-30 09:05"
+    end: "2026-06-30 09:25"
+
+# 重症加算フラグ
+severity_flags:
+  - critical
+
+# 術後指示
+postop_orders:
+  - "アセトアミノフェン 1000mg IV 6h毎"
+  - "フルルビプロフェン 50mg IV 疼痛時"
+  - "メトクロプラミド 10mg IV 嘔気時"
+  - "飲水: 覚醒2h後から可"

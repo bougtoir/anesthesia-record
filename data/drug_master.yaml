@@ -1,0 +1,251 @@
+# 麻酔記録 薬剤・輸液マスタ（外部参照ファイル）
+# - プログラム外で編集し、起動時/リロードで読み込む。
+# - nhi_price（薬価, 円/容器）は改定で変動するため必ず nhi_price_date と併せて施設で検証すること。
+#   ここに記載の薬価は「サンプル値（要検証）」であり、課金の正確性は保証しない。
+# - delivery: bolus(単回) / infusion(持続) の可否
+# - billing_rule: round_up_vial（容器単位切上げ＝残液破棄も課金, 既定） / per_ml / exact
+# - pkpd_enabled が true の薬剤のみ効果部位濃度(Ce)推定の対象。pk_model はモデル選択キー。
+#
+# schema_version はローダ側の互換性チェックに使用。
+schema_version: 1
+
+drugs:
+  # ===== 静脈麻酔薬 =====
+  - id: propofol_1pct
+    generic_name: プロポフォール
+    brand_name: ディプリバン
+    category: iv_anesthetic
+    formulation: 1%注射液
+    container_volume_ml: 20
+    concentration: 10            # mg/ml
+    strength_unit: mg/ml
+    package_unit: バイアル
+    nhi_price: 594              # サンプル値(要検証)
+    nhi_price_date: 2024-04-01
+    billing_rule: round_up_vial
+    routes: [iv]
+    delivery: [bolus, infusion]
+    dose_units: [mg, mg/kg, mg/kg/h, ug/kg/min, ml/h]
+    unit_bolus: mg
+    unit_rate: mg/kg/h
+    pkpd_enabled: true
+    pk_model: marsh            # marsh / schnider / eleveld
+    color: "#F4C20D"
+
+  - id: remimazolam_50mg
+    generic_name: レミマゾラム
+    brand_name: アネレム
+    category: iv_anesthetic
+    formulation: 注射用50mg（溶解）
+    container_volume_ml: 50     # 溶解後想定（1mg/ml）
+    concentration: 1            # mg/ml（溶解後）
+    strength_unit: mg/ml
+    package_unit: バイアル
+    nhi_price: 2160            # サンプル値(要検証)
+    nhi_price_date: 2024-04-01
+    billing_rule: round_up_vial
+    routes: [iv]
+    delivery: [bolus, infusion]
+    dose_units: [mg, mg/kg, mg/kg/h]
+    pkpd_enabled: false        # PKPDモデル未確定のため当面オフ
+    color: "#9C27B0"
+
+  # ===== オピオイド =====
+  - id: remifentanil_2mg
+    generic_name: レミフェンタニル
+    brand_name: アルチバ
+    category: opioid
+    formulation: 静注用2mg（溶解）
+    container_volume_ml: 40     # 例:2mgを40mlに溶解=50ug/ml
+    concentration: 0.05         # mg/ml = 50 ug/ml
+    strength_unit: mg/ml
+    package_unit: バイアル
+    nhi_price: 1880            # サンプル値(要検証)
+    nhi_price_date: 2024-04-01
+    billing_rule: round_up_vial
+    routes: [iv]
+    delivery: [infusion, bolus]
+    dose_units: [ug/kg/min, ug/kg, ng/ml_target, ml/h]
+    unit_rate: ug/kg/min
+    pkpd_enabled: true
+    pk_model: minto            # minto / eleveld
+    color: "#1E88E5"
+
+  - id: fentanyl_0_1mg
+    generic_name: フェンタニル
+    brand_name: フェンタニル
+    category: opioid
+    formulation: 0.1mg/2ml注
+    container_volume_ml: 2
+    concentration: 0.05         # mg/ml = 50 ug/ml
+    strength_unit: mg/ml
+    package_unit: アンプル
+    nhi_price: 253            # サンプル値(要検証)
+    nhi_price_date: 2024-04-01
+    billing_rule: round_up_vial
+    routes: [iv]
+    delivery: [bolus, infusion]
+    dose_units: [ug, ug/kg, ml]
+    unit_bolus: ug
+    pkpd_enabled: true
+    pk_model: shafer
+    color: "#3949AB"
+
+  # ===== 筋弛緩薬 =====
+  - id: rocuronium_50mg
+    generic_name: ロクロニウム
+    brand_name: エスラックス
+    category: muscle_relaxant
+    formulation: 50mg/5ml注
+    container_volume_ml: 5
+    concentration: 10           # mg/ml
+    strength_unit: mg/ml
+    package_unit: バイアル
+    nhi_price: 513            # サンプル値(要検証)
+    nhi_price_date: 2024-04-01
+    billing_rule: round_up_vial
+    routes: [iv]
+    delivery: [bolus, infusion]
+    dose_units: [mg, mg/kg, ug/kg/min]
+    unit_bolus: mg
+    pkpd_enabled: false
+    color: "#43A047"
+
+  # ===== 拮抗薬 =====
+  - id: sugammadex_200mg
+    generic_name: スガマデクス
+    brand_name: ブリディオン
+    category: antagonist
+    formulation: 200mg/2ml注
+    container_volume_ml: 2
+    concentration: 100          # mg/ml
+    strength_unit: mg/ml
+    package_unit: バイアル
+    nhi_price: 4170            # サンプル値(要検証)
+    nhi_price_date: 2024-04-01
+    billing_rule: round_up_vial
+    routes: [iv]
+    delivery: [bolus]
+    dose_units: [mg, mg/kg]
+    pkpd_enabled: false
+    color: "#00897B"
+
+  # ===== 昇圧薬 =====
+  - id: phenylephrine_1mg
+    generic_name: フェニレフリン
+    brand_name: ネオシネジン
+    category: vasopressor
+    formulation: 1mg/1ml注
+    container_volume_ml: 1
+    concentration: 1            # mg/ml（希釈して使用が一般的）
+    strength_unit: mg/ml
+    package_unit: アンプル
+    nhi_price: 95             # サンプル値(要検証)
+    nhi_price_date: 2024-04-01
+    billing_rule: round_up_vial
+    routes: [iv]
+    delivery: [bolus, infusion]
+    dose_units: [ug, ug/kg/min, ml]
+    pkpd_enabled: false
+    color: "#E53935"
+
+  - id: ephedrine_40mg
+    generic_name: エフェドリン
+    brand_name: エフェドリン
+    category: vasopressor
+    formulation: 40mg/1ml注
+    container_volume_ml: 1
+    concentration: 40           # mg/ml（希釈して使用）
+    strength_unit: mg/ml
+    package_unit: アンプル
+    nhi_price: 97             # サンプル値(要検証)
+    nhi_price_date: 2024-04-01
+    billing_rule: round_up_vial
+    routes: [iv]
+    delivery: [bolus]
+    dose_units: [mg, ml]
+    pkpd_enabled: false
+    color: "#D81B60"
+
+  # ===== 局所麻酔薬（極量管理対象） =====
+  - id: lidocaine_1pct
+    generic_name: リドカイン
+    brand_name: キシロカイン
+    category: local_anesthetic
+    formulation: 1%注（10mg/ml）
+    container_volume_ml: 10
+    concentration: 10           # mg/ml
+    strength_unit: mg/ml
+    package_unit: アンプル
+    nhi_price: 94             # サンプル値(要検証)
+    nhi_price_date: 2024-04-01
+    billing_rule: round_up_vial
+    routes: [local, epidural, infiltration]
+    delivery: [bolus]
+    dose_units: [mg, ml]
+    pkpd_enabled: false
+    # 極量管理用
+    max_dose_mg_per_kg: 4.5        # アドレナリン非添加の目安(要施設基準で確認)
+    max_dose_mg_per_kg_with_epi: 7.0
+    color: "#6D4C41"
+
+  - id: ropivacaine_0_75pct
+    generic_name: ロピバカイン
+    brand_name: アナペイン
+    category: local_anesthetic
+    formulation: 0.75%注（7.5mg/ml）
+    container_volume_ml: 10
+    concentration: 7.5          # mg/ml
+    strength_unit: mg/ml
+    package_unit: アンプル
+    nhi_price: 380            # サンプル値(要検証)
+    nhi_price_date: 2024-04-01
+    billing_rule: round_up_vial
+    routes: [epidural, nerve_block, infiltration]
+    delivery: [bolus, infusion]
+    dose_units: [mg, ml, mg/h]
+    unit_bolus: ml
+    pkpd_enabled: false
+    max_dose_mg_per_kg: 3.0        # 目安(要施設基準で確認)
+    color: "#5D4037"
+
+  # ===== 輸液 =====
+  - id: acetated_ringer_500
+    generic_name: 酢酸リンゲル液
+    brand_name: ヴィーンF
+    category: fluid
+    fluid_type: crystalloid
+    formulation: 500ml
+    container_volume_ml: 500
+    concentration: 1
+    strength_unit: ml/ml
+    package_unit: バッグ
+    nhi_price: 214           # サンプル値(要検証)
+    nhi_price_date: 2024-04-01
+    billing_rule: round_up_vial
+    routes: [iv]
+    delivery: [infusion]
+    dose_units: [ml, ml/h]
+    pkpd_enabled: false
+    is_output: false
+    color: "#90CAF9"
+
+  - id: hes_130_06_500
+    generic_name: ヒドロキシエチルデンプン
+    brand_name: ボルベン
+    category: fluid
+    fluid_type: colloid
+    formulation: 6% 500ml
+    container_volume_ml: 500
+    concentration: 1
+    strength_unit: ml/ml
+    package_unit: バッグ
+    nhi_price: 1010          # サンプル値(要検証)
+    nhi_price_date: 2024-04-01
+    billing_rule: round_up_vial
+    routes: [iv]
+    delivery: [infusion]
+    dose_units: [ml, ml/h]
+    pkpd_enabled: false
+    is_output: false
+    color: "#64B5F6"
