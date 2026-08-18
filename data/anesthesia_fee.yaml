@@ -1,0 +1,117 @@
+# 麻酔料設定ファイル（2026年6月改訂準拠）
+# 保険診療ベースの点数設定。施設ごとに上書き可能。
+#
+# 構成:
+#   methods: 麻酔方法（全身麻酔、脊椎麻酔等）
+#   positions: 特殊体位加算
+#   severity: 重症加算
+
+# --- 麻酔方法 ---
+methods:
+  - id: general_anesthesia
+    name: 全身麻酔
+    category: general
+    icon_start: "GA▶"
+    icon_end: "GA■"
+    # 時間区分別点数（点）
+    time_fees:
+      - { max_hours: 2, points_per_30min: 900 }
+      - { max_hours: null, points_per_30min: 600 }  # 2h超
+    base_points: 0  # 基本点数（時間点数とは別に加算）
+
+  - id: spinal_anesthesia
+    name: 脊椎麻酔
+    category: neuraxial
+    icon_start: "Sp▶"
+    icon_end: "Sp■"
+    time_fees:
+      - { max_hours: 2, points_per_30min: 850 }
+      - { max_hours: null, points_per_30min: 400 }
+    base_points: 0
+
+  - id: epidural_anesthesia
+    name: 硬膜外麻酔
+    category: neuraxial
+    icon_start: "Epi▶"
+    icon_end: "Epi■"
+    time_fees:
+      - { max_hours: 2, points_per_30min: 750 }
+      - { max_hours: null, points_per_30min: 400 }
+    base_points: 0
+
+  - id: nerve_block
+    name: 神経ブロック
+    category: regional
+    icon_start: "NB▶"
+    icon_end: "NB■"
+    time_fees:
+      - { max_hours: null, points_per_30min: 0 }
+    base_points: 450
+
+  - id: mac
+    name: MAC(監視下麻酔管理)
+    category: mac
+    icon_start: "MAC▶"
+    icon_end: "MAC■"
+    time_fees:
+      - { max_hours: 2, points_per_30min: 600 }
+      - { max_hours: null, points_per_30min: 400 }
+    base_points: 0
+
+# 同時算定不可ルール: 同一 category 内は最高点数のもののみ算定
+# category が異なれば併算定可（例: general + regional）
+exclusive_categories:
+  - [general, mac]        # 全身麻酔とMACは同時算定不可
+  - [neuraxial]           # 脊麻と硬膜外は同時算定不可（一方のみ）
+
+# --- 特殊体位加算 ---
+positions:
+  - id: lateral
+    name: 側臥位
+    icon: "⊏"
+    points_per_case: 100  # 1件あたり加算点数
+    note: "仰臥位復帰までの時間で算定"
+
+  - id: prone
+    name: 腹臥位
+    icon: "⊓"
+    points_per_case: 200
+    note: "仰臥位復帰までの時間で算定"
+
+  - id: lithotomy
+    name: 砕石位
+    icon: "⊔"
+    points_per_case: 100
+    note: "仰臥位復帰までの時間で算定"
+
+  - id: sitting
+    name: 坐位
+    icon: "⊥"
+    points_per_case: 150
+    note: "仰臥位復帰までの時間で算定"
+
+supine_icon: "⊙"  # 仰臥位アイコン（特殊体位終了マーカー）
+
+# --- 重症加算 ---
+severity:
+  - id: critical
+    name: 重症加算(特定集中治療室管理)
+    multiplier: 1.5       # 全身麻酔料に対する係数
+    conditions:
+      - "人工心肺使用"
+      - "低体温療法"
+      - "心臓大血管手術"
+
+  - id: emergency
+    name: 時間外加算(緊急手術)
+    multiplier: 1.0       # 別途加算点数として計算
+    additional_points: 500
+    conditions:
+      - "緊急手術"
+
+  - id: pediatric
+    name: 未熟児・新生児加算
+    multiplier: 1.5
+    conditions:
+      - "未熟児"
+      - "新生児(28日以内)"

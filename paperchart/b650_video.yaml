@@ -1,0 +1,86 @@
+monitor: GE CARESCAPE B650
+source:
+  type: uvc
+  # Windows では None にすると 0 から順に自動探索します.
+  # 複数カメラがある場合は index を指定してください.
+  device_index: null
+  width: 640
+  height: 480
+  # 必要に応じて 1920x1080 等に変更. キャプチャボードが対応していればそこに切り替わる.
+  # width: 1920
+  # height: 1080
+
+rois:
+  # 右上の時刻. 紙カルテやビデオ同期のタイムスタンプ用.
+  - name: time
+    parameter: time
+    x: 0.74
+    y: 0.00
+    w: 0.26
+    h: 0.09
+    frequency: event
+
+  # HR: 右上 緑の大きな数字
+  - name: hr
+    parameter: hr
+    x: 0.70
+    y: 0.12
+    w: 0.30
+    h: 0.20
+    frequency: continuous
+
+  # ST: HR の下 (optional). ST は連続で読み取りたい場合に有効.
+  - name: st
+    parameter: st
+    x: 0.74
+    y: 0.33
+    w: 0.26
+    h: 0.17
+    frequency: continuous
+
+  # SpO2: 右中 黄色の大きな数字. BIS 行がないレイアウトでも下まで含むよう高さを確保.
+  - name: spo2
+    parameter: spo2
+    x: 0.70
+    y: 0.47
+    w: 0.30
+    h: 0.20
+    frequency: continuous
+
+  # BIS: 右中下 青/シアンの数字. センサー未接続時は値が出ず --- や off になる.
+  # ない場合は NMT 等が入るが、数値がなければ None として無視.
+  - name: bis
+    parameter: bis
+    x: 0.70
+    y: 0.63
+    w: 0.30
+    h: 0.13
+    frequency: continuous
+
+  # NIBP: 左下 赤の数字. "103/67 (82)" の形式.
+  - name: nibp
+    parameter: nibp
+    x: 0.00
+    y: 0.74
+    w: 0.35
+    h: 0.22
+    frequency: interval
+    interval_sec: 30
+
+  # イベント時の心電図波形キャプチャ用. 定期 OCR ではなく明示的トリガーで保存.
+  - name: ecg_waveform
+    parameter: ecg_waveform
+    x: 0.00
+    y: 0.00
+    w: 0.68
+    h: 0.33
+    frequency: event
+
+  # Pleth / SpO2 波形領域. 必要に応じて明示的保存.
+  - name: spo2_waveform
+    parameter: pleth
+    x: 0.00
+    y: 0.33
+    w: 0.68
+    h: 0.37
+    frequency: event

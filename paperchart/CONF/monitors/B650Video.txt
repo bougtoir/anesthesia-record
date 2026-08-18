@@ -1,0 +1,42 @@
+// B650Video.txt
+// B650 外部モニタ UVC+OCR paperChart モジュール設定
+
+// @から始まる行は本モジュール専用設定
+// Python実行ファイル（PATH通っている場合は python）
+@Python=python
+
+// 実行するPythonモジュール
+@Module=anesthesia_record.monitor_video
+
+// モニタ用ROI/ソース設定ファイル（@WorkingDir からの相対パス）
+@Config=paperchart\b650_video.yaml
+
+// UVCデバイス番号（既定は0）
+@Device=0
+
+// 取得間隔（秒）
+@Interval=1.0
+
+// Python作業ディレクトリ（B650Video.exe 配置場所からの相対パス）
+@WorkingDir=..\..\anesthesia-record
+
+// デバッグウィンドウを表示して送るデータを確認する（True/False）
+@Debug=False
+
+// PpcCtrl 用システム設定
+Startup=Hidden
+SuppressZero=True
+
+// バイタル項目の paperChart 項目名・単位マッピング
+// 末尾にカンマ区切りで項目ごとの更新間隔（秒）を追加可能
+// 省略時は @Interval の値が使われる
+// ソース名|SDM で 収縮期/拡張期/平均 の3セット
+// ソース名|SD  で 収縮期/拡張期 の2セット
+// spo2_waveform から派生する PI/PVI は "spo2_waveform.pi" 等で指定可
+hr=HR,bpm
+spo2=SpO2,%
+nibp|sdm=NIBP,mmHg
+bis=BIS,
+st=ST,
+spo2_waveform.pi=PI,%
+spo2_waveform.pvi=PVI,%
